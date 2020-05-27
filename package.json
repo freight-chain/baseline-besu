@@ -7,6 +7,14 @@
   "author": "sam bacha <ops@freighttrust.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "@typescript-eslint/parser": "^3.0.2",
+    "eslint": "^7.1.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-jest": "^23.13.2",
+    "eslint-plugin-prettier": "^3.1.3",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.6",
+    "prettier": "^2.0.5",
     "tslib": "2.0.0"
   }
 }
