@@ -1,0 +1,12 @@
+{
+  "name": "baseline-besu",
+  "version": "0.0.1",
+  "description": "besu module for baseline",
+  "main": "app.js",
+  "repository": "git@github.com:freight-chain/baseline-besu.git",
+  "author": "sam bacha <ops@freighttrust.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "tslib": "2.0.0"
+  }
+}
