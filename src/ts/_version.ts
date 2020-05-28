@@ -1,1 +1,1 @@
-export const version = "hyperledger-besu-ethers/0.0.4";
+export const version = "besu-baseline/0.4.0";
