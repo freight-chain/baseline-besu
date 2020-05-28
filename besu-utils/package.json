@@ -1,0 +1,9 @@
+{
+  "name": "besu-utils",
+  "version": "0.5.0",
+  "description": "Besu web3 utils",
+  "main": "src/index.js",
+  "repository": "https://github.com/freight-chain/besu-utils.git",
+  "author": "sbacha",
+  "license": "Apache-2.0"
+}
