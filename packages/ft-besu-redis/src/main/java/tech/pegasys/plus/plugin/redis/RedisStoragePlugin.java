@@ -1,6 +1,8 @@
 package tech.pegasys.plus.plugin.redis;
 
 import com.google.auto.service.AutoService;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hyperledger.besu.plugin.BesuContext;
@@ -11,32 +13,30 @@ import org.hyperledger.besu.plugin.services.storage.KeyValueStorageFactory;
 import tech.pegasys.plus.plugin.redis.config.RedisStorageOptions;
 import tech.pegasys.plus.plugin.redis.core.RedisKeyValueStorageFactory;
 
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-
-// The AutoService annotation (when paired with the corresponding annotation processor) will
-// automatically handle adding the relevant META-INF files so Besu will load this plugin.
+// The AutoService annotation (when paired with the corresponding annotation
+// processor) will automatically handle adding the relevant META-INF files so
+// Besu will load this plugin.
 @AutoService(BesuPlugin.class)
 public class RedisStoragePlugin implements BesuPlugin {
   private static Logger LOG = LogManager.getLogger();
   private static String PLUGIN_NAME = "redis-storage";
 
   private BesuContext context;
-  private final RedisStorageOptions options = RedisStorageOptions.builder().build();
+  private final RedisStorageOptions options =
+      RedisStorageOptions.builder().build();
   private KeyValueStorageFactory factory;
 
   @Override
   public void register(final BesuContext context) {
     LOG.info("Registering plugin {}.", PLUGIN_NAME);
     this.context = context;
-    context
-        .getService(PicoCLIOptions.class)
+    context.getService(PicoCLIOptions.class)
         .ifPresentOrElse(
-            this::handleCLIOptions, () -> LOG.error("Could not obtain PicoCLIOptions service."));
-    context
-        .getService(StorageService.class)
-        .ifPresentOrElse(
-            this::createAndRegister, () -> LOG.error("Could not obtain Storage service."));
+            this::handleCLIOptions,
+            () -> LOG.error("Could not obtain PicoCLIOptions service."));
+    context.getService(StorageService.class)
+        .ifPresentOrElse(this::createAndRegister,
+                         () -> LOG.error("Could not obtain Storage service."));
   }
 
   private void handleCLIOptions(final PicoCLIOptions cmdLineOptions) {

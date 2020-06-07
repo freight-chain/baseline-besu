@@ -1,6 +1,10 @@
 package tech.pegasys.plus.plugin.redis.core;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
 import io.lettuce.core.api.sync.RedisCommands;
+import java.security.SecureRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,11 +13,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.security.SecureRandom;
-
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
 public class RedisTransactionTest {
@@ -21,7 +20,8 @@ public class RedisTransactionTest {
   @Mock private RedisCommands<byte[], byte[]> commands;
   private RedisTransaction redisTransaction;
   private byte[] key = randomBytes(32);
-  private byte[] value = randomBytes(32);;
+  private byte[] value = randomBytes(32);
+  ;
 
   @BeforeEach
   void setUp() {

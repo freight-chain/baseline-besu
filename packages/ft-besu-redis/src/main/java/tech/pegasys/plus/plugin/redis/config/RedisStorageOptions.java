@@ -10,8 +10,10 @@ import picocli.CommandLine;
 @ToString
 public class RedisStorageOptions {
   @CommandLine.Option(names = "--plugin-redis-storage-host")
-  @Builder.Default private String host = "localhost";
+  @Builder.Default
+  private String host = "localhost";
 
   @CommandLine.Option(names = "--plugin-redis-storage-port")
-  @Builder.Default private Integer port = 6379;
+  @Builder.Default
+  private Integer port = 6379;
 }

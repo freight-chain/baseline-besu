@@ -8,18 +8,17 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import io.lettuce.core.codec.ByteArrayCodec;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hyperledger.besu.plugin.services.exception.StorageException;
 import org.hyperledger.besu.plugin.services.storage.KeyValueStorage;
 import org.hyperledger.besu.plugin.services.storage.KeyValueStorageTransaction;
 import tech.pegasys.plus.plugin.redis.config.RedisStorageOptions;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class RedisKeyValueStorage implements KeyValueStorage {
   private static Logger LOG = LogManager.getLogger();
@@ -40,13 +39,12 @@ public class RedisKeyValueStorage implements KeyValueStorage {
     LOG.info("Successfully connected to redis.");
   }
 
-  public static RedisKeyValueStorage fromConfig(
-      final Integer database, final RedisStorageOptions config) {
-    return new RedisKeyValueStorage(
-        RedisClient.create(
-            RedisURI.Builder.redis(config.getHost(), config.getPort())
-                .withDatabase(database)
-                .build()));
+  public static RedisKeyValueStorage
+  fromConfig(final Integer database, final RedisStorageOptions config) {
+    return new RedisKeyValueStorage(RedisClient.create(
+        RedisURI.Builder.redis(config.getHost(), config.getPort())
+            .withDatabase(database)
+            .build()));
   }
 
   @Override
@@ -65,7 +63,8 @@ public class RedisKeyValueStorage implements KeyValueStorage {
   }
 
   @Override
-  public long removeAllKeysUnless(final Predicate<byte[]> retainCondition) throws StorageException {
+  public long removeAllKeysUnless(final Predicate<byte[]> retainCondition)
+      throws StorageException {
     return applyForAllKeys(retainCondition.negate(), commands::del);
   }
 
@@ -88,8 +87,8 @@ public class RedisKeyValueStorage implements KeyValueStorage {
     redisClient.shutdown();
   }
 
-  private long applyForAllKeys(
-      final Predicate<byte[]> condition, final Consumer<byte[]> keyConsumer) {
+  private long applyForAllKeys(final Predicate<byte[]> condition,
+                               final Consumer<byte[]> keyConsumer) {
     long removedNodeCounter = 0;
     KeyScanCursor<byte[]> cursor = commands.scan();
     while (!cursor.isFinished()) {
