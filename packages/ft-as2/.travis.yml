@@ -1,25 +1,12 @@
-language: node_js
-
-node_js:
-  - 'node'
-  - '10'
-  - '8'
-
-env:
-  - workerCount=3 timeout=600000
-
-matrix:
-  fast_finish: true
-
-branches:
-  only:
-  - master
-  - /^release-.*/
-
+language : node_js
+node_js :
+ - stable
 install:
-  - npm uninstall typescript --no-save
-  - npm install
+ - npm ci
+script:
+ - npm test
 
-cache:
-  directories:
-    - node_modules
+ script:
+  - npm run test
+after_script:
+  - npm run ci-process-cover
