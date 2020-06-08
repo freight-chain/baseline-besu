@@ -53,3 +53,7 @@ docker volume rm -f docker_redis_data
 ```shell script
 ./besu.sh --key-value-storage=redis-storage --plugin-redis-storage-host=localhost --plugin-redis-storage-port=6379
 ```
+
+Credit to:
+[abdelhamidbakhta](https://github.com/abdelhamidbakhta/besu-storage-redis)
+Licenese: Apache-2.0
