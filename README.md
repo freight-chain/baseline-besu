@@ -1,5 +1,12 @@
-# baseline-besu
-module for besu
+# Baseline-Besu
+for dealing with ethereum foundation mainnet and freight trust mainnet via baseline protocol
+
+# Packages
+
+## Besu
+- Hyperledger Besu Redis Plugin. 
+- Contracts deployed on both chains with the same addresses (mutable address). 
+- Cross-chain APIs (just a limited set of APIs that work on both chains. 
 
 ## Contracts 
 
