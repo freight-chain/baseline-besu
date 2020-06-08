@@ -1,124 +1,124 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value : true});
 exports.verify = void 0;
 const forge = require("node-forge");
 const Helpers_1 = require("../Helpers");
 const attributeValidator = {
-  name: "AuthenticatedAttribute",
-  tagClass: forge.asn1.Class.UNIVERSAL,
-  type: forge.asn1.Type.SEQUENCE,
-  constructed: true,
-  value: [
+  name : "AuthenticatedAttribute",
+  tagClass : forge.asn1.Class.UNIVERSAL,
+  type : forge.asn1.Type.SEQUENCE,
+  constructed : true,
+  value : [
     {
-      name: "AuthenticatedAttribute.type",
-      tagClass: forge.asn1.Class.UNIVERSAL,
-      type: forge.asn1.Type.OID,
-      constructed: false,
-      capture: "type",
+      name : "AuthenticatedAttribute.type",
+      tagClass : forge.asn1.Class.UNIVERSAL,
+      type : forge.asn1.Type.OID,
+      constructed : false,
+      capture : "type",
     },
     {
-      name: "AuthenticatedAttribute.value",
-      tagClass: forge.asn1.Class.UNIVERSAL,
-      type: forge.asn1.Type.SET,
-      constructed: true,
-      capture: "value",
+      name : "AuthenticatedAttribute.value",
+      tagClass : forge.asn1.Class.UNIVERSAL,
+      type : forge.asn1.Type.SET,
+      constructed : true,
+      capture : "value",
     },
   ],
 };
 const signerValidator = {
-  name: "SignerInfo",
-  tagClass: forge.asn1.Class.UNIVERSAL,
-  type: forge.asn1.Type.SEQUENCE,
-  constructed: true,
-  value: [
+  name : "SignerInfo",
+  tagClass : forge.asn1.Class.UNIVERSAL,
+  type : forge.asn1.Type.SEQUENCE,
+  constructed : true,
+  value : [
     {
-      name: "SignerInfo.version",
-      tagClass: forge.asn1.Class.UNIVERSAL,
-      type: forge.asn1.Type.INTEGER,
-      constructed: false,
+      name : "SignerInfo.version",
+      tagClass : forge.asn1.Class.UNIVERSAL,
+      type : forge.asn1.Type.INTEGER,
+      constructed : false,
     },
     {
-      name: "SignerInfo.issuerAndSerialNumber",
-      tagClass: forge.asn1.Class.UNIVERSAL,
-      type: forge.asn1.Type.SEQUENCE,
-      constructed: true,
-      value: [
+      name : "SignerInfo.issuerAndSerialNumber",
+      tagClass : forge.asn1.Class.UNIVERSAL,
+      type : forge.asn1.Type.SEQUENCE,
+      constructed : true,
+      value : [
         {
-          name: "SignerInfo.issuerAndSerialNumber.issuer",
-          tagClass: forge.asn1.Class.UNIVERSAL,
-          type: forge.asn1.Type.SEQUENCE,
-          constructed: true,
-          captureAsn1: "issuer",
+          name : "SignerInfo.issuerAndSerialNumber.issuer",
+          tagClass : forge.asn1.Class.UNIVERSAL,
+          type : forge.asn1.Type.SEQUENCE,
+          constructed : true,
+          captureAsn1 : "issuer",
         },
         {
-          name: "SignerInfo.issuerAndSerialNumber.serialNumber",
-          tagClass: forge.asn1.Class.UNIVERSAL,
-          type: forge.asn1.Type.INTEGER,
-          constructed: false,
-          capture: "serial",
-        },
-      ],
-    },
-    {
-      name: "SignerInfo.digestAlgorithm",
-      tagClass: forge.asn1.Class.UNIVERSAL,
-      type: forge.asn1.Type.SEQUENCE,
-      constructed: true,
-      value: [
-        {
-          name: "SignerInfo.digestAlgorithm.algorithm",
-          tagClass: forge.asn1.Class.UNIVERSAL,
-          type: forge.asn1.Type.OID,
-          constructed: false,
-          capture: "digestAlgorithm",
-        },
-        {
-          name: "SignerInfo.digestAlgorithm.parameter",
-          tagClass: forge.asn1.Class.UNIVERSAL,
-          constructed: false,
-          captureAsn1: "digestParameter",
-          optional: true,
+          name : "SignerInfo.issuerAndSerialNumber.serialNumber",
+          tagClass : forge.asn1.Class.UNIVERSAL,
+          type : forge.asn1.Type.INTEGER,
+          constructed : false,
+          capture : "serial",
         },
       ],
     },
     {
-      name: "SignerInfo.authenticatedAttributes",
-      tagClass: forge.asn1.Class.CONTEXT_SPECIFIC,
-      type: forge.asn1.Type.NONE,
-      constructed: true,
-      optional: true,
-      capture: "authenticatedAttributes",
+      name : "SignerInfo.digestAlgorithm",
+      tagClass : forge.asn1.Class.UNIVERSAL,
+      type : forge.asn1.Type.SEQUENCE,
+      constructed : true,
+      value : [
+        {
+          name : "SignerInfo.digestAlgorithm.algorithm",
+          tagClass : forge.asn1.Class.UNIVERSAL,
+          type : forge.asn1.Type.OID,
+          constructed : false,
+          capture : "digestAlgorithm",
+        },
+        {
+          name : "SignerInfo.digestAlgorithm.parameter",
+          tagClass : forge.asn1.Class.UNIVERSAL,
+          constructed : false,
+          captureAsn1 : "digestParameter",
+          optional : true,
+        },
+      ],
     },
     {
-      name: "SignerInfo.digestEncryptionAlgorithm",
-      tagClass: forge.asn1.Class.UNIVERSAL,
-      type: forge.asn1.Type.SEQUENCE,
-      constructed: true,
-      capture: "signatureAlgorithm",
+      name : "SignerInfo.authenticatedAttributes",
+      tagClass : forge.asn1.Class.CONTEXT_SPECIFIC,
+      type : forge.asn1.Type.NONE,
+      constructed : true,
+      optional : true,
+      capture : "authenticatedAttributes",
     },
     {
-      name: "SignerInfo.encryptedDigest",
-      tagClass: forge.asn1.Class.UNIVERSAL,
-      type: forge.asn1.Type.OCTETSTRING,
-      constructed: false,
-      capture: "signature",
+      name : "SignerInfo.digestEncryptionAlgorithm",
+      tagClass : forge.asn1.Class.UNIVERSAL,
+      type : forge.asn1.Type.SEQUENCE,
+      constructed : true,
+      capture : "signatureAlgorithm",
     },
     {
-      name: "SignerInfo.unauthenticatedAttributes",
-      tagClass: forge.asn1.Class.CONTEXT_SPECIFIC,
-      type: forge.asn1.Type.BOOLEAN,
-      constructed: true,
-      optional: true,
-      capture: "unauthenticatedAttributes",
+      name : "SignerInfo.encryptedDigest",
+      tagClass : forge.asn1.Class.UNIVERSAL,
+      type : forge.asn1.Type.OCTETSTRING,
+      constructed : false,
+      capture : "signature",
+    },
+    {
+      name : "SignerInfo.unauthenticatedAttributes",
+      tagClass : forge.asn1.Class.CONTEXT_SPECIFIC,
+      type : forge.asn1.Type.BOOLEAN,
+      constructed : true,
+      optional : true,
+      capture : "unauthenticatedAttributes",
     },
   ],
 };
 const messageDigestValidator = {
-  name: "MessageDigest",
-  tagClass: forge.asn1.Class.UNIVERSAL,
-  type: forge.asn1.Type.OCTETSTRING,
-  constructed: false,
-  capture: "messageDigest",
+  name : "MessageDigest",
+  tagClass : forge.asn1.Class.UNIVERSAL,
+  type : forge.asn1.Type.OCTETSTRING,
+  constructed : false,
+  capture : "messageDigest",
 };
 function findCertificate(cert, msg) {
   var sAttr = cert.issuer.attributes;
@@ -133,10 +133,8 @@ function findCertificate(cert, msg) {
     }
     var match = true;
     for (var j = 0; j < sAttr.length; ++j) {
-      if (
-        rAttr[j].type !== sAttr[j].type ||
-        rAttr[j].value !== sAttr[j].value
-      ) {
+      if (rAttr[j].type !== sAttr[j].type ||
+          rAttr[j].value !== sAttr[j].value) {
         match = false;
         break;
       }
@@ -153,9 +151,8 @@ function findSignerInfo(cert, signerInfos) {
     const signerInfo = {};
     forge.asn1.validate(signerInfos[i], signerValidator, signerInfo);
     signerInfo.issuer = forge.pki.RDNAttributesAsArray(signerInfo.issuer);
-    signerInfo.serialNumber = forge.util
-      .createBuffer(signerInfo.serial)
-      .toHex();
+    signerInfo.serialNumber =
+        forge.util.createBuffer(signerInfo.serial).toHex();
     const rAttr = signerInfo.issuer;
     if (signerInfo.serialNumber !== cert.serialNumber) {
       continue;
@@ -165,10 +162,8 @@ function findSignerInfo(cert, signerInfos) {
     }
     let match = true;
     for (let j = 0; j < sAttr.length; ++j) {
-      if (
-        rAttr[j].type !== sAttr[j].type ||
-        rAttr[j].value !== sAttr[j].value
-      ) {
+      if (rAttr[j].type !== sAttr[j].type ||
+          rAttr[j].value !== sAttr[j].value) {
         match = false;
         break;
       }
@@ -208,16 +203,14 @@ function verify(verifier) {
   const recipient = findCertificate(cert, msg);
   if (Helpers_1.isNullOrUndefined(recipient)) {
     throw new Error(
-      "Certificate provided was not used to sign message; no matching signature certificate."
-    );
+        "Certificate provided was not used to sign message; no matching signature certificate.");
   }
   // If recipient was found but does not have a public key, use the provided
   // certificate.
   publicKey = recipient.publicKey || cert.publicKey;
   if (Helpers_1.isNullOrUndefined(publicKey)) {
     throw new Error(
-      "Public key not found in either the signature certificate or provided certificate."
-    );
+        "Public key not found in either the signature certificate or provided certificate.");
   }
   content = verifier.detached || msg.content;
   if (msg.content instanceof forge.util.ByteBuffer) {
@@ -226,11 +219,7 @@ function verify(verifier) {
     content = forge.util.encodeUtf8(content);
   }
   const contentAsn1 = forge.asn1.create(
-    forge.asn1.Class.UNIVERSAL,
-    forge.asn1.Type.OCTETSTRING,
-    false,
-    content
-  );
+      forge.asn1.Class.UNIVERSAL, forge.asn1.Type.OCTETSTRING, false, content);
   let contentDer = forge.asn1.toDer(contentAsn1);
   // skip identifier and length per RFC 2315 9.3
   // skip identifier (1 byte)
@@ -252,37 +241,26 @@ function verify(verifier) {
   }
   contentMessageDigest.start().update(contentDer.getBytes());
   if (signedAttributes.length > 0) {
-    const { messageDigest } = messageDigestFromAsn1(signedAttributes);
+    const {messageDigest} = messageDigestFromAsn1(signedAttributes);
     // RFC 5652 requires the contents to match the message digest in the signed
     // attributes.
     if (contentMessageDigest.digest().getBytes() === messageDigest) {
       // Compute message digest of signed attributes and verify with signature.
-      const signedAttrMessageDigest = forge.md[
-        forge.pki.oids[algorithm]
-      ].create();
+      const signedAttrMessageDigest =
+          forge.md[forge.pki.oids[algorithm]].create();
       // Per RFC 2315, attributes are to be digested using a SET container
-      const attrsAsn1 = forge.asn1.create(
-        forge.asn1.Class.UNIVERSAL,
-        forge.asn1.Type.SET,
-        true,
-        signedAttributes
-      );
-      signedAttrMessageDigest
-        .start()
-        .update(forge.asn1.toDer(attrsAsn1).getBytes());
-      verified = publicKey.verify(
-        signedAttrMessageDigest.digest().getBytes(),
-        signature,
-        "RSASSA-PKCS1-V1_5"
-      );
+      const attrsAsn1 =
+          forge.asn1.create(forge.asn1.Class.UNIVERSAL, forge.asn1.Type.SET,
+                            true, signedAttributes);
+      signedAttrMessageDigest.start().update(
+          forge.asn1.toDer(attrsAsn1).getBytes());
+      verified = publicKey.verify(signedAttrMessageDigest.digest().getBytes(),
+                                  signature, "RSASSA-PKCS1-V1_5");
     }
   } else {
     // Verify the computed message digest of contents with the signature.
-    verified = publicKey.verify(
-      contentMessageDigest.digest().getBytes(),
-      signature,
-      "RSASSA-PKCS1-V1_5"
-    );
+    verified = publicKey.verify(contentMessageDigest.digest().getBytes(),
+                                signature, "RSASSA-PKCS1-V1_5");
   }
   return verified;
 }

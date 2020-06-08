@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value : true});
 exports.AS2MimeNode = void 0;
 const MimeNode = require("nodemailer/lib/mime-node");
 const Helpers_1 = require("../Helpers");
@@ -20,33 +20,31 @@ class AS2MimeNode extends MimeNode {
       sign,
       encrypt,
     } = options;
-    super(contentType, { filename, baseBoundary });
+    super(contentType, {filename, baseBoundary});
     this.contentType = contentType;
     this.boundaryPrefix = Helpers_1.isNullOrUndefined(boundaryPrefix)
-      ? "--LibAs2"
-      : boundaryPrefix === false
-      ? ""
-      : boundaryPrefix;
-    if (!Helpers_1.isNullOrUndefined(content)) this.setContent(content);
-    if (!Helpers_1.isNullOrUndefined(headers)) this.setHeader(headers);
-    if (!Helpers_1.isNullOrUndefined(sign)) this.setSigning(sign);
-    if (!Helpers_1.isNullOrUndefined(encrypt)) this.setEncryption(encrypt);
+                              ? "--LibAs2"
+                              : boundaryPrefix === false ? "" : boundaryPrefix;
+    if (!Helpers_1.isNullOrUndefined(content))
+      this.setContent(content);
+    if (!Helpers_1.isNullOrUndefined(headers))
+      this.setHeader(headers);
+    if (!Helpers_1.isNullOrUndefined(sign))
+      this.setSigning(sign);
+    if (!Helpers_1.isNullOrUndefined(encrypt))
+      this.setEncryption(encrypt);
     if (!Helpers_1.isNullOrUndefined(messageId))
       this.setHeader("Message-ID", messageId);
-    if (
-      !Helpers_1.isNullOrUndefined(contentDisposition) &&
-      contentDisposition !== false
-    ) {
-      this.setHeader(
-        "Content-Disposition",
-        contentDisposition === true ? "attachment" : contentDisposition
-      );
+    if (!Helpers_1.isNullOrUndefined(contentDisposition) &&
+        contentDisposition !== false) {
+      this.setHeader("Content-Disposition", contentDisposition === true
+                                                ? "attachment"
+                                                : contentDisposition);
     }
     if (this.contentType) {
       this.signed = contentType.toLowerCase().startsWith("multipart/signed");
-      this.encrypted = contentType
-        .toLowerCase()
-        .startsWith("multipart/encrypted");
+      this.encrypted =
+          contentType.toLowerCase().startsWith("multipart/encrypted");
       this.smime = Helpers_1.isSMime(contentType);
       this.compressed = false;
       if (this.smime) {
@@ -70,16 +68,17 @@ class AS2MimeNode extends MimeNode {
             this.smimeType = "not-available";
           }
         }
-        if (this.smimeType === "signed-data") this.signed = true;
-        if (this.smimeType === "enveloped-data") this.encrypted = true;
-        if (this.smimeType === "compressed-data") this.compressed = true;
+        if (this.smimeType === "signed-data")
+          this.signed = true;
+        if (this.smimeType === "enveloped-data")
+          this.encrypted = true;
+        if (this.smimeType === "compressed-data")
+          this.compressed = true;
       }
     }
     this.parsed = false;
   }
-  setSigning(options) {
-    this._sign = Helpers_1.signingOptions(options);
-  }
+  setSigning(options) { this._sign = Helpers_1.signingOptions(options); }
   setEncryption(options) {
     this._encrypt = Helpers_1.encryptionOptions(options);
   }
@@ -101,8 +100,8 @@ class AS2MimeNode extends MimeNode {
   }
   async verify(options) {
     return (await AS2Crypto_1.AS2Crypto.verify(this, options))
-      ? this.childNodes[0]
-      : undefined;
+               ? this.childNodes[0]
+               : undefined;
   }
   async decrypt(options) {
     return AS2Crypto_1.AS2Crypto.decrypt(this, options);
@@ -112,11 +111,10 @@ class AS2MimeNode extends MimeNode {
     return AS2Crypto_1.AS2Crypto.encrypt(this, options);
   }
   async build() {
-    if (this.parsed && this.raw !== undefined) return Buffer.from(this.raw);
-    if (
-      !Helpers_1.isNullOrUndefined(this._sign) &&
-      !Helpers_1.isNullOrUndefined(this._encrypt)
-    ) {
+    if (this.parsed && this.raw !== undefined)
+      return Buffer.from(this.raw);
+    if (!Helpers_1.isNullOrUndefined(this._sign) &&
+        !Helpers_1.isNullOrUndefined(this._encrypt)) {
       const signed = await this.sign(this._sign);
       const encrypted = await signed.encrypt(this._encrypt);
       return await encrypted.build();
@@ -133,11 +131,11 @@ class AS2MimeNode extends MimeNode {
   }
   static generateMessageId(sender, uniqueId) {
     uniqueId = Helpers_1.isNullOrUndefined(uniqueId)
-      ? AS2Crypto_1.AS2Crypto.generateUniqueId()
-      : uniqueId;
+                   ? AS2Crypto_1.AS2Crypto.generateUniqueId()
+                   : uniqueId;
     sender = Helpers_1.isNullOrUndefined(uniqueId)
-      ? os_1.hostname() || "localhost"
-      : sender;
+                 ? os_1.hostname() || "localhost"
+                 : sender;
     return "<" + uniqueId + "@" + sender + ">";
   }
 }

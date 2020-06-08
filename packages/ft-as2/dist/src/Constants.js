@@ -1,6 +1,13 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.STANDARD_HEADER = exports.RECEIPT = exports.ENCRYPTION = exports.MICALG = exports.SIGNING = exports.ENCODING = exports.PROTOCOL_TYPE = exports.MULTIPART_TYPE = exports.GUARANTEED_TEXT = exports.SIGNATURE_FOOTER = exports.SIGNATURE_HEADER = exports.ENCRYPTION_FILENAME = exports.SIGNATURE_FILENAME = exports.SMIME_DESC = exports.AS2_VERSION = exports.MIME_VERSION = exports.CRLF = exports.NOT_IMPLEMENTED = void 0;
+Object.defineProperty(exports, "__esModule", {value : true});
+exports.STANDARD_HEADER = exports.RECEIPT = exports.ENCRYPTION =
+    exports.MICALG = exports.SIGNING = exports.ENCODING =
+        exports.PROTOCOL_TYPE = exports.MULTIPART_TYPE =
+            exports.GUARANTEED_TEXT = exports.SIGNATURE_FOOTER =
+                exports.SIGNATURE_HEADER = exports.ENCRYPTION_FILENAME =
+                    exports.SIGNATURE_FILENAME = exports.SMIME_DESC =
+                        exports.AS2_VERSION = exports.MIME_VERSION =
+                            exports.CRLF = exports.NOT_IMPLEMENTED = void 0;
 exports.NOT_IMPLEMENTED = new Error("NOT YET IMPLEMENTED.");
 // STRINGS
 exports.CRLF = "\r\n";
@@ -25,48 +32,48 @@ exports.GUARANTEED_TEXT = [
 ];
 // NAMESPACES
 exports.MULTIPART_TYPE = {
-  MIXED: "multipart/mixed",
-  SIGNED: "multipart/signed",
-  ENCRYPTED: "multipart/encrypted",
+  MIXED : "multipart/mixed",
+  SIGNED : "multipart/signed",
+  ENCRYPTED : "multipart/encrypted",
 };
 exports.PROTOCOL_TYPE = {
-  PKCS7: "application/x-pkcs7-signature",
+  PKCS7 : "application/x-pkcs7-signature",
 };
 exports.ENCODING = {
-  _8BIT: "8bit",
-  BASE64: "base64",
-  BINARY: "binary",
-  BIT8: "8bit",
+  _8BIT : "8bit",
+  BASE64 : "base64",
+  BINARY : "binary",
+  BIT8 : "8bit",
 };
 exports.SIGNING = {
-  SHA1: "sha1",
-  SHA256: "sha256",
-  SHA384: "sha384",
-  SHA512: "sha512",
+  SHA1 : "sha1",
+  SHA256 : "sha256",
+  SHA384 : "sha384",
+  SHA512 : "sha512",
 };
 exports.MICALG = {
-  SHA1: "sha1",
-  SHA256: "sha-256",
-  SHA384: "sha-384",
-  SHA512: "sha-512",
+  SHA1 : "sha1",
+  SHA256 : "sha-256",
+  SHA384 : "sha-384",
+  SHA512 : "sha-512",
 };
 exports.ENCRYPTION = {
-  _3DES: "des-EDE3-CBC",
-  AES128: "aes128-CBC",
-  AES192: "aes192-CBC",
-  AES256: "aes256-CBC",
-  DES3: "des-EDE3-CBC",
+  _3DES : "des-EDE3-CBC",
+  AES128 : "aes128-CBC",
+  AES192 : "aes192-CBC",
+  AES256 : "aes256-CBC",
+  DES3 : "des-EDE3-CBC",
 };
 exports.RECEIPT = {
-  NONE: 0,
-  SEND: 1,
-  SEND_SIGNED: 2,
+  NONE : 0,
+  SEND : 1,
+  SEND_SIGNED : 2,
 };
 exports.STANDARD_HEADER = {
-  VERSION: "AS2-Version",
-  TO: "AS2-To",
-  FROM: "AS2-From",
-  MDN_TO: "Disposition-Notification-To",
-  MDN_OPTIONS: "Disposition-Notification-Options",
-  MDN_URL: "Receipt-Delivery-Option",
+  VERSION : "AS2-Version",
+  TO : "AS2-To",
+  FROM : "AS2-From",
+  MDN_TO : "Disposition-Notification-To",
+  MDN_OPTIONS : "Disposition-Notification-Options",
+  MDN_URL : "Receipt-Delivery-Option",
 };

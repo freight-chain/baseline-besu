@@ -2,25 +2,23 @@
 const assert = require("assert");
 
 const ethUtils = require("ethereumjs-util");
-const { BN, rlp } = ethUtils;
+const {BN, rlp} = ethUtils;
 
 const _typeof =
-  typeof Symbol === "function" && typeof Symbol.iterator === "symbol"
-    ? function(obj) {
-        return typeof obj;
-      }
-    : function(obj) {
-        return obj &&
-          typeof Symbol === "function" &&
-          obj.constructor === Symbol &&
-          obj !== Symbol.prototype
-          ? "symbol"
-          : typeof obj;
-      };
-
+    typeof Symbol === "function" && typeof Symbol.iterator === "symbol"
+        ? function(obj) { return typeof obj; }
+        : function(obj) {
+            return obj && typeof Symbol === "function" &&
+                           obj.constructor === Symbol &&
+                           obj !== Symbol.prototype
+                       ? "symbol"
+                       : typeof obj;
+          };
 
 /**
- * Attempts to turn a value into a `Buffer`. As input it supports `Buffer`, `String`, `Number`, null/undefined, `BN` and other objects with a `toArray()` method.
+ * Attempts to turn a value into a `Buffer`. As input it supports `Buffer`,
+ * `String`, `Number`, null/undefined, `BN` and other objects with a `toArray()`
+ * method.
  * @param {*} v the value
  */
 function toBuffer(v) {
@@ -31,10 +29,8 @@ function toBuffer(v) {
       if (ethUtils.isHexString(v)) {
         v = Buffer.from(ethUtils.padToEven(ethUtils.stripHexPrefix(v)), "hex");
       } else if (
-        v.match(
-          /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/
-        )
-      ) {
+          v.match(
+              /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/)) {
         // handle base64 strings, i.e. privacyGroupId
         //   ^                        # Start of input
         //   ([0-9a-zA-Z+/]{4})*      # Groups of 4 valid characters decode
@@ -51,8 +47,8 @@ function toBuffer(v) {
         v = Buffer.from(v);
       } else {
         throw new Error(
-          `Cannot convert string to buffer. toBuffer only supports 0x-prefixed hex strings and this string was given: ${v}`
-        );
+            `Cannot convert string to buffer. toBuffer only supports 0x-prefixed hex strings and this string was given: ${
+                v}`);
       }
     } else if (typeof v === "number") {
       v = ethUtils.intToBuffer(v);
@@ -71,7 +67,8 @@ function toBuffer(v) {
 }
 
 /**
- * Defines properties on a `Object`. It make the assumption that underlying data is binary.
+ * Defines properties on a `Object`. It make the assumption that underlying data
+ * is binary.
  * @param {Object} self the `Object` to define properties on
  * @param {Array} fields an array fields to define. Fields can contain:
  * * `name` - the name of the properties
@@ -88,9 +85,8 @@ function defineProperties(self, fields, data) {
   self.toJSON = function(label) {
     if (label) {
       const obj = {};
-      self._fields.forEach(function(field) {
-        obj[field] = `0x${self[field].toString("hex")}`;
-      });
+      self._fields.forEach(function(
+          field) { obj[field] = `0x${self[field].toString("hex")}`; });
       return obj;
     }
     return ethUtils.baToJSON(this.raw);
@@ -102,8 +98,7 @@ function defineProperties(self, fields, data) {
 
     if (self.raw[10][0].length !== 0 && self.raw[11].length === 32) {
       throw Error(
-        "privacyGroupId and privateFor fields are mutually exclusive"
-      );
+          "privacyGroupId and privateFor fields are mutually exclusive");
     }
 
     if (self.raw[11].length === 32) {
@@ -117,9 +112,7 @@ function defineProperties(self, fields, data) {
 
   fields.forEach(function(field, i) {
     self._fields.push(field.name);
-    function getter() {
-      return self.raw[i];
-    }
+    function getter() { return self.raw[i]; }
     function setter(v) {
       // handle array of Buffer
       if (field.bufferArray) {
@@ -135,25 +128,20 @@ function defineProperties(self, fields, data) {
       if (field.allowLess && field.length) {
         v = ethUtils.stripZeros(v);
         assert(
-          field.length >= v.length,
-          `The field ${field.name} must not have more ${field.length} bytes`
-        );
+            field.length >= v.length,
+            `The field ${field.name} must not have more ${field.length} bytes`);
       } else if (!(field.allowZero && v.length === 0) && field.length) {
         assert(
-          field.length === v.length,
-          `The field ${field.name} must have byte length of ${field.length}`
-        );
+            field.length === v.length,
+            `The field ${field.name} must have byte length of ${field.length}`);
       }
 
       self.raw[i] = v;
     }
 
-    Object.defineProperty(self, field.name, {
-      enumerable: true,
-      configurable: true,
-      get: getter,
-      set: setter
-    });
+    Object.defineProperty(
+        self, field.name,
+        {enumerable : true, configurable : true, get : getter, set : setter});
 
     if (field.default) {
       self[field.name] = field.default;
@@ -162,10 +150,10 @@ function defineProperties(self, fields, data) {
     // attach alias
     if (field.alias) {
       Object.defineProperty(self, field.alias, {
-        enumerable: false,
-        configurable: true,
-        set: setter,
-        get: getter
+        enumerable : false,
+        configurable : true,
+        set : setter,
+        get : getter
       });
     }
   });
@@ -206,9 +194,8 @@ function defineProperties(self, fields, data) {
 
         self[self._fields[i]] = v;
       });
-    } else if (
-      (typeof data === "undefined" ? "undefined" : _typeof(data)) === "object"
-    ) {
+    } else if ((typeof data === "undefined" ? "undefined" : _typeof(data)) ===
+               "object") {
       const keys = Object.keys(data);
       fields.forEach(function(field) {
         if (keys.indexOf(field.name) !== -1)

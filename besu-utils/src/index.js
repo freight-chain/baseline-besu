@@ -1,10 +1,10 @@
 const crypto = require("crypto");
 
-const { privateToAddress } = require("./custom-ethjs-util");
+const {privateToAddress} = require("./custom-ethjs-util");
 const privacyProxyAbi = require("./solidity/PrivacyProxy.json").output.abi;
 const PrivateTransaction = require("./privateTransaction");
-const { generatePrivacyGroup } = require("./privacyGroup");
-const { PrivateSubscription } = require("./privateSubscription");
+const {generatePrivacyGroup} = require("./privacyGroup");
+const {PrivateSubscription} = require("./privateSubscription");
 
 function EEAClient(web3, chainId) {
   const GAS_PRICE = 0;
@@ -16,83 +16,75 @@ function EEAClient(web3, chainId) {
 
   /* eslint-disable no-param-reassign */
   // Initialize the extensions
-  web3.priv = {
-    subscriptionPollingInterval: 1000
-  };
+  web3.priv = {subscriptionPollingInterval : 1000};
   web3.eea = {};
   web3.privx = {};
   /* eslint-enable no-param-reassign */
 
   // INTERNAL ==========
   web3.extend({
-    property: "privInternal",
-    methods: [
+    property : "privInternal",
+    methods : [
       // eea
       {
-        name: "sendRawTransaction",
-        call: "eea_sendRawTransaction",
-        params: 1
+        name : "sendRawTransaction",
+        call : "eea_sendRawTransaction",
+        params : 1
       },
       // priv
       {
-        name: "call",
-        call: "priv_call",
-        params: 3,
-        inputFormatter: [
+        name : "call",
+        call : "priv_call",
+        params : 3,
+        inputFormatter : [
           null, // privacyGroupId
           null, // tx
           web3.extend.formatters.inputDefaultBlockNumberFormatter
         ]
       },
       {
-        name: "getTransactionCount",
-        call: "priv_getTransactionCount",
-        params: 2,
-        outputFormatter: output => {
-          return parseInt(output, 16);
-        }
+        name : "getTransactionCount",
+        call : "priv_getTransactionCount",
+        params : 2,
+        outputFormatter : output => { return parseInt(output, 16); }
       },
       {
-        name: "getTransactionReceipt",
-        call: "priv_getTransactionReceipt",
-        params: 2
+        name : "getTransactionReceipt",
+        call : "priv_getTransactionReceipt",
+        params : 2
       },
       {
-        name: "distributeRawTransaction",
-        call: "priv_distributeRawTransaction",
-        params: 1
+        name : "distributeRawTransaction",
+        call : "priv_distributeRawTransaction",
+        params : 1
+      },
+      {name : "findPrivacyGroup", call : "priv_findPrivacyGroup", params : 1}, {
+        name : "deletePrivacyGroup",
+        call : "priv_deletePrivacyGroup",
+        params : 1
       },
       {
-        name: "findPrivacyGroup",
-        call: "priv_findPrivacyGroup",
-        params: 1
+        name : "subscribe",
+        call : "priv_subscribe",
+        params : 3 // type, privacyGroupId, filter
       },
       {
-        name: "deletePrivacyGroup",
-        call: "priv_deletePrivacyGroup",
-        params: 1
-      },
-      {
-        name: "subscribe",
-        call: "priv_subscribe",
-        params: 3 // type, privacyGroupId, filter
-      },
-      {
-        name: "unsubscribe",
-        call: "priv_unsubscribe",
-        params: 2 // privacyGroupId, filterId
+        name : "unsubscribe",
+        call : "priv_unsubscribe",
+        params : 2 // privacyGroupId, filterId
       },
       // privx
       {
-        name: "findOnChainPrivacyGroup",
-        call: "privx_findOnChainPrivacyGroup",
-        params: 1
+        name : "findOnChainPrivacyGroup",
+        call : "privx_findOnChainPrivacyGroup",
+        params : 1
       }
     ]
   });
 
   /**
-   * Send a transaction to `eea_sendRawTransaction` or `priv_distributeRawTransaction`
+   * Send a transaction to `eea_sendRawTransaction` or
+   * `priv_distributeRawTransaction`
    * @param options Used to create the private transaction
    * - options.privateKey
    * - options.privateFrom
@@ -110,54 +102,56 @@ function EEAClient(web3, chainId) {
     const privateKeyBuffer = Buffer.from(options.privateKey, "hex");
     const from = `0x${privateToAddress(privateKeyBuffer).toString("hex")}`;
     return web3.priv
-      .getTransactionCount({
-        from,
-        privateFrom: options.privateFrom,
-        privateFor: options.privateFor,
-        privacyGroupId: options.privacyGroupId
-      })
-      .then(transactionCount => {
-        tx.nonce = options.nonce || transactionCount;
-        tx.gasPrice = GAS_PRICE;
-        tx.gasLimit = GAS_LIMIT;
-        tx.to = options.to;
-        tx.value = 0;
-        tx.data = options.data;
-        // eslint-disable-next-line no-underscore-dangle
-        tx._chainId = chainId;
-        tx.privateFrom = options.privateFrom;
+        .getTransactionCount({
+          from,
+          privateFrom : options.privateFrom,
+          privateFor : options.privateFor,
+          privacyGroupId : options.privacyGroupId
+        })
+        .then(transactionCount => {
+          tx.nonce = options.nonce || transactionCount;
+          tx.gasPrice = GAS_PRICE;
+          tx.gasLimit = GAS_LIMIT;
+          tx.to = options.to;
+          tx.value = 0;
+          tx.data = options.data;
+          // eslint-disable-next-line no-underscore-dangle
+          tx._chainId = chainId;
+          tx.privateFrom = options.privateFrom;
 
-        if (options.privateFor) {
-          tx.privateFor = options.privateFor;
-        }
-        if (options.privacyGroupId) {
-          tx.privacyGroupId = options.privacyGroupId;
-        }
-        tx.restriction = "restricted";
+          if (options.privateFor) {
+            tx.privateFor = options.privateFor;
+          }
+          if (options.privacyGroupId) {
+            tx.privacyGroupId = options.privacyGroupId;
+          }
+          tx.restriction = "restricted";
 
-        tx.sign(privateKeyBuffer);
+          tx.sign(privateKeyBuffer);
 
-        const signedRlpEncoded = tx.serialize().toString("hex");
+          const signedRlpEncoded = tx.serialize().toString("hex");
 
-        let result;
-        if (method === "eea_sendRawTransaction") {
-          result = web3.privInternal.sendRawTransaction(signedRlpEncoded);
-        } else if (method === "priv_distributeRawTransaction") {
-          result = web3.privInternal.distributeRawTransaction(signedRlpEncoded);
-        }
+          let result;
+          if (method === "eea_sendRawTransaction") {
+            result = web3.privInternal.sendRawTransaction(signedRlpEncoded);
+          } else if (method === "priv_distributeRawTransaction") {
+            result =
+                web3.privInternal.distributeRawTransaction(signedRlpEncoded);
+          }
 
-        if (result != null) {
-          return result;
-        }
+          if (result != null) {
+            return result;
+          }
 
-        throw new Error(`Unknown method ${method}`);
-      });
+          throw new Error(`Unknown method ${method}`);
+        });
   };
 
   /**
    * Returns the Private Marker transaction
    * @param {string} txHash The transaction hash
-   * @param {int} retries Number of retries to be made to get the private marker transaction receipt
+   * @param {int} retries Number of retries to be made to get the private marker
+   *     transaction receipt
    * @param {int} delay The delay between the retries
    * @returns Promise to resolve the private marker transaction receipt
    */
@@ -165,108 +159,93 @@ function EEAClient(web3, chainId) {
     /* eslint-disable promise/param-names */
     /* eslint-disable promise/avoid-new */
 
-    const waitFor = ms => {
-      return new Promise(r => {
-        return setTimeout(r, ms);
-      });
-    };
+    const waitFor =
+        ms => { return new Promise(r => { return setTimeout(r, ms); }); };
 
     let notified = false;
     const retryOperation = (operation, times) => {
       return new Promise((resolve, reject) => {
         return operation()
-          .then(result => {
-            if (result == null) {
-              if (!notified) {
-                console.log("Waiting for transaction to be mined ...");
-                notified = true;
-              }
-              if (delay === 0) {
-                throw new Error(
-                  `Timed out after ${retries} attempts waiting for transaction to be mined`
-                );
+            .then(result => {
+              if (result == null) {
+                if (!notified) {
+                  console.log("Waiting for transaction to be mined ...");
+                  notified = true;
+                }
+                if (delay === 0) {
+                  throw new Error(`Timed out after ${
+                      retries} attempts waiting for transaction to be mined`);
+                } else {
+                  const waitInSeconds = (retries * delay) / 1000;
+                  throw new Error(`Timed out after ${
+                      waitInSeconds}s waiting for transaction to be mined`);
+                }
               } else {
-                const waitInSeconds = (retries * delay) / 1000;
-                throw new Error(
-                  `Timed out after ${waitInSeconds}s waiting for transaction to be mined`
-                );
+                return resolve();
               }
-            } else {
-              return resolve();
-            }
-          })
-          .catch(reason => {
-            if (times - 1 > 0) {
-              // eslint-disable-next-line promise/no-nesting
-              return waitFor(delay)
-                .then(retryOperation.bind(null, operation, times - 1))
-                .then(resolve)
-                .catch(reject);
-            }
-            return reject(reason);
-          });
+            })
+            .catch(reason => {
+              if (times - 1 > 0) {
+                // eslint-disable-next-line promise/no-nesting
+                return waitFor(delay)
+                    .then(retryOperation.bind(null, operation, times - 1))
+                    .then(resolve)
+                    .catch(reject);
+              }
+              return reject(reason);
+            });
       });
     };
 
-    const operation = () => {
-      return web3.eth.getTransactionReceipt(txHash);
-    };
+    const operation = () => { return web3.eth.getTransactionReceipt(txHash); };
 
     return retryOperation(operation, retries);
   };
 
   // PRIV ==========
   web3.extend({
-    property: "priv",
-    methods: [
+    property : "priv",
+    methods : [
       {
-        name: "createPrivacyGroup",
-        call: "priv_createPrivacyGroup",
-        params: 1
+        name : "createPrivacyGroup",
+        call : "priv_createPrivacyGroup",
+        params : 1
       },
       {
-        name: "getTransaction",
-        call: "priv_getPrivateTransaction",
-        params: 1
+        name : "getTransaction",
+        call : "priv_getPrivateTransaction",
+        params : 1
       },
       {
-        name: "getPastLogs",
-        call: "priv_getLogs",
-        params: 3,
-        inputFormatter: [
-          null,
-          null,
-          web3.extend.formatters.inputDefaultBlockNumberFormatter
+        name : "getPastLogs",
+        call : "priv_getLogs",
+        params : 3,
+        inputFormatter : [
+          null, null, web3.extend.formatters.inputDefaultBlockNumberFormatter
         ],
-        outputFormatter: web3.extend.outputLogFormatter
+        outputFormatter : web3.extend.outputLogFormatter
       },
       {
-        name: "createFilter",
-        call: "priv_newFilter",
-        params: 3,
-        inputFormatter: [
-          null,
-          null,
-          web3.extend.formatters.inputDefaultBlockNumberFormatter
+        name : "createFilter",
+        call : "priv_newFilter",
+        params : 3,
+        inputFormatter : [
+          null, null, web3.extend.formatters.inputDefaultBlockNumberFormatter
         ]
       },
       {
-        name: "getFilterLogs",
-        call: "priv_getFilterLogs",
-        params: 2,
-        outputFormatter: web3.extend.outputLogFormatter
+        name : "getFilterLogs",
+        call : "priv_getFilterLogs",
+        params : 2,
+        outputFormatter : web3.extend.outputLogFormatter
       },
       {
-        name: "getFilterChanges",
-        call: "priv_getFilterChanges",
-        params: 2,
-        outputFormatter: web3.extend.outputLogFormatter
+        name : "getFilterChanges",
+        call : "priv_getFilterChanges",
+        params : 2,
+        outputFormatter : web3.extend.outputLogFormatter
       },
-      {
-        name: "uninstallFilter",
-        call: "priv_uninstallFilter",
-        params: 2
-      }
+      {name : "uninstallFilter", call : "priv_uninstallFilter", params : 2}
     ]
   });
 
@@ -278,7 +257,7 @@ function EEAClient(web3, chainId) {
   const getTransactionCount = options => {
     let privacyGroupId;
     if (options.privacyGroupId) {
-      ({ privacyGroupId } = options);
+      ({privacyGroupId} = options);
     } else {
       privacyGroupId = generatePrivacyGroup(options);
     }
@@ -316,16 +295,13 @@ function EEAClient(web3, chainId) {
    * Get the private transaction Receipt.
    * @param {string} txHash Transaction Hash of the marker transaction
    * @param {string} enclavePublicKey Public key used to start-up the Enclave
-   * @param {int} retries Number of retries to be made to get the private marker transaction receipt
+   * @param {int} retries Number of retries to be made to get the private marker
+   *     transaction receipt
    * @param {int} delay The delay between the retries
    * @returns {Promise<AxiosResponse<any> | never>}
    */
-  const getTransactionReceipt = (
-    txHash,
-    enclavePublicKey,
-    retries = 300,
-    delay = 1000
-  ) => {
+  const getTransactionReceipt = (txHash, enclavePublicKey, retries = 300,
+                                 delay = 1000) => {
     return getMarkerTransaction(txHash, retries, delay).then(() => {
       return web3.privInternal.getTransactionReceipt(txHash, enclavePublicKey);
     });
@@ -346,11 +322,8 @@ function EEAClient(web3, chainId) {
     txCall.to = options.to;
     txCall.data = options.data;
 
-    return web3.privInternal.call(
-      options.privacyGroupId,
-      txCall,
-      options.blockNumber
-    );
+    return web3.privInternal.call(options.privacyGroupId, txCall,
+                                  options.blockNumber);
   };
 
   /**
@@ -358,7 +331,8 @@ function EEAClient(web3, chainId) {
    *
    * If the provider supports subscriptions, it uses `priv_subscribe`, otherwise
    * it uses polling and `priv_getFilterChanges` to get new logs. Returns an
-   * error to the callback if there is a problem subscribing or creating the filter.
+   * error to the callback if there is a problem subscribing or creating the
+   * filter.
    * @param {string} privacyGroupId
    * @param {*} filter
    * @param {function} callback returns the filter/subscription ID, or an error
@@ -400,7 +374,8 @@ function EEAClient(web3, chainId) {
    * - privateFrom : Enclave public key
    * - privateFor : Enclave keys to send the transaction to
    * - privacyGroupId : Enclave id representing the receivers of the transaction
-   * - nonce(Optional) : If not provided, will be calculated using `eea_getTransctionCount`
+   * - nonce(Optional) : If not provided, will be calculated using
+   * `eea_getTransctionCount`
    * - to : The address to send the transaction
    * - data : Data to be sent in the transaction
    *
@@ -410,9 +385,7 @@ function EEAClient(web3, chainId) {
     return genericSendRawTransaction(options, "eea_sendRawTransaction");
   };
 
-  Object.assign(web3.eea, {
-    sendRawTransaction
-  });
+  Object.assign(web3.eea, {sendRawTransaction});
 
   // PRIVX ==========
 
@@ -429,26 +402,22 @@ function EEAClient(web3, chainId) {
   const setPrivacyGroupLockState = options => {
     const contract = new web3.eth.Contract(privacyProxyAbi);
     // eslint-disable-next-line no-underscore-dangle
-    const functionAbi = contract._jsonInterface.find(e => {
-      return e.name === (options.lock ? "lock" : "unlock");
-    });
+    const functionAbi = contract._jsonInterface.find(
+        e => { return e.name === (options.lock ? "lock" : "unlock"); });
 
     const functionCall = {
-      to: "0x000000000000000000000000000000000000007c",
-      data: functionAbi.signature,
-      privateFrom: options.enclaveKey,
-      privacyGroupId: options.privacyGroupId,
-      privateKey: options.privateKey
+      to : "0x000000000000000000000000000000000000007c",
+      data : functionAbi.signature,
+      privateFrom : options.enclaveKey,
+      privacyGroupId : options.privacyGroupId,
+      privateKey : options.privateKey
     };
 
-    return web3.eea
-      .sendRawTransaction(functionCall)
-      .then(async transactionHash => {
-        return web3.priv.getTransactionReceipt(
-          transactionHash,
-          options.publicKey
-        );
-      });
+    return web3.eea.sendRawTransaction(functionCall)
+        .then(async transactionHash => {
+          return web3.priv.getTransactionReceipt(transactionHash,
+                                                 options.publicKey);
+        });
   };
 
   /**
@@ -458,40 +427,39 @@ function EEAClient(web3, chainId) {
    * privacyGroupId: Privacy group ID to add to
    * privateKey: Private Key used to sign transaction with
    * enclaveKey: Orion public key
-   * participants: list of enclaveKey to pass to the contract to add to the group
+   * participants: list of enclaveKey to pass to the contract to add to the
+   * group
    * @returns {Promise<AxiosResponse<any> | never>}
    */
   const createXPrivacyGroup = options => {
     const contract = new web3.eth.Contract(privacyProxyAbi);
     // eslint-disable-next-line no-underscore-dangle
-    const functionAbi = contract._jsonInterface.find(e => {
-      return e.name === "addParticipants";
-    });
-    const functionArgs = web3.eth.abi
-      .encodeParameters(functionAbi.inputs, [
-        Buffer.from(options.enclaveKey, "base64"),
-        options.participants.map(e => {
-          return Buffer.from(e, "base64");
-        })
-      ])
-      .slice(2);
+    const functionAbi = contract._jsonInterface.find(
+        e => { return e.name === "addParticipants"; });
+    const functionArgs =
+        web3.eth.abi
+            .encodeParameters(functionAbi.inputs,
+                              [
+                                Buffer.from(options.enclaveKey, "base64"),
+                                options.participants.map(
+                                    e => { return Buffer.from(e, "base64"); })
+                              ])
+            .slice(2);
 
     // Generate a random ID if one was not passed in
     const privacyGroupId =
-      options.privacyGroupId || crypto.randomBytes(32).toString("base64");
+        options.privacyGroupId || crypto.randomBytes(32).toString("base64");
 
     const functionCall = {
-      to: "0x000000000000000000000000000000000000007c",
-      data: functionAbi.signature + functionArgs,
-      privateFrom: options.enclaveKey,
+      to : "0x000000000000000000000000000000000000007c",
+      data : functionAbi.signature + functionArgs,
+      privateFrom : options.enclaveKey,
       privacyGroupId,
-      privateKey: options.privateKey
+      privateKey : options.privateKey
     };
     return web3.eea.sendRawTransaction(functionCall).then(transactionHash => {
-      return web3.priv.getTransactionReceipt(
-        transactionHash,
-        options.publicKey
-      );
+      return web3.priv.getTransactionReceipt(transactionHash,
+                                             options.publicKey);
     });
   };
 
@@ -502,20 +470,19 @@ function EEAClient(web3, chainId) {
    * privacyGroupId: Privacy group ID to add to
    * privateKey: Private Key used to sign transaction with
    * enclaveKey: Orion public key
-   * participants: list of enclaveKey to pass to the contract to add to the group
+   * participants: list of enclaveKey to pass to the contract to add to the
+   * group
    * @returns {Promise<AxiosResponse<any> | never>}
    */
   const addToPrivacyGroup = options => {
-    return setPrivacyGroupLockState(
-      Object.assign(options, { lock: true })
-    ).then(receipt => {
-      if (receipt.status === "0x1") {
-        return createXPrivacyGroup(options);
-      }
-      throw Error(
-        `Locking the privacy group failed, receipt: ${JSON.stringify(receipt)}`
-      );
-    });
+    return setPrivacyGroupLockState(Object.assign(options, {lock : true}))
+        .then(receipt => {
+          if (receipt.status === "0x1") {
+            return createXPrivacyGroup(options);
+          }
+          throw Error(`Locking the privacy group failed, receipt: ${
+              JSON.stringify(receipt)}`);
+        });
   };
 
   /**
@@ -531,28 +498,27 @@ function EEAClient(web3, chainId) {
   const removeFromPrivacyGroup = options => {
     const contract = new web3.eth.Contract(privacyProxyAbi);
     // eslint-disable-next-line no-underscore-dangle
-    const functionAbi = contract._jsonInterface.find(e => {
-      return e.name === "removeParticipant";
-    });
-    const functionArgs = web3.eth.abi
-      .encodeParameters(functionAbi.inputs, [
-        Buffer.from(options.enclaveKey, "base64"),
-        Buffer.from(options.participant, "base64")
-      ])
-      .slice(2);
+    const functionAbi = contract._jsonInterface.find(
+        e => { return e.name === "removeParticipant"; });
+    const functionArgs =
+        web3.eth.abi
+            .encodeParameters(functionAbi.inputs,
+                              [
+                                Buffer.from(options.enclaveKey, "base64"),
+                                Buffer.from(options.participant, "base64")
+                              ])
+            .slice(2);
 
     const functionCall = {
-      to: "0x000000000000000000000000000000000000007c",
-      data: functionAbi.signature + functionArgs,
-      privateFrom: options.enclaveKey,
-      privacyGroupId: options.privacyGroupId,
-      privateKey: options.privateKey
+      to : "0x000000000000000000000000000000000000007c",
+      data : functionAbi.signature + functionArgs,
+      privateFrom : options.enclaveKey,
+      privacyGroupId : options.privacyGroupId,
+      privateKey : options.privateKey
     };
     return web3.eea.sendRawTransaction(functionCall).then(transactionHash => {
-      return web3.priv.getTransactionReceipt(
-        transactionHash,
-        options.publicKey
-      );
+      return web3.priv.getTransactionReceipt(transactionHash,
+                                             options.publicKey);
     });
   };
 
@@ -569,7 +535,7 @@ function EEAClient(web3, chainId) {
   };
 
   Object.assign(web3.privx, {
-    createPrivacyGroup: createXPrivacyGroup,
+    createPrivacyGroup : createXPrivacyGroup,
     findOnChainPrivacyGroup,
     removeFromPrivacyGroup,
     addToPrivacyGroup,
