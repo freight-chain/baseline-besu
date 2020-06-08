@@ -160,4 +160,3 @@ export function decode(data: BytesLike): any {
     }
     return decoded.result;
 }
-

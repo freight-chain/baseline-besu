@@ -48,8 +48,8 @@ describe('Privacy Group unit tests', () => {
         ${'empty privateFor array'} | ${'A1aVtMxLCUHmBVHXoZzzBgPbW/wj5axDpW9X8l91SGo='}  | ${[]}  | ${/invalid privateFor/}
         ${'privateFor not base64 encoded'} | ${'A1aVtMxLCUHmBVHXoZzzBgPbW/wj5axDpW9X8l91SGo='}  | ${['0x‌2a8d9b56a0fe9cd94d60be4413bcb721d3a7be27ed8e28b3a6346df874ee141b']}  | ${/invalid privateFor/}
         ${'privateFor wrong length'} | ${'A1aVtMxLCUHmBVHXoZzzBgPbW/wj5axDpW9X8l91SGo='}  | ${['o2bVqD+nNlNYL5EE7y3IdOnviftjiizpjRt+HTuFBs=']}  | ${/invalid privateFor/}
-        
-   
+
+
         ${'privateFrom undefined'} | ${undefined}  | ${['Ko2bVqD+nNlNYL5EE7y3IdOnviftjiizpjRt+HTuFBs=']}  | ${/invalid privateFrom/}
         ${'privateFrom null'} | ${null}  | ${['Ko2bVqD+nNlNYL5EE7y3IdOnviftjiizpjRt+HTuFBs=']}  | ${/invalid privateFrom/}
         ${'privateFrom hex'} | ${'0x‌2a8d9b56a0fe9cd94d60be4413bcb721d3a7be27ed8e28b3a6346df874ee141b'}  | ${['Ko2bVqD+nNlNYL5EE7y3IdOnviftjiizpjRt+HTuFBs=']}  | ${/invalid privateFrom/}
