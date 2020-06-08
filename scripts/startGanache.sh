@@ -1,6 +1,6 @@
 #/bin/bash
 
-pid=$(lsof -i:8646 -t); kill -TERM $pid || kill -KILL $pid
+pid=$(lsof -i:8646 -t); kill -TERM "$pid" || kill -KILL "$pid"
 
 ../node_modules/.bin/ganache-cli -p 8646 \
  -l 8000000 \
