@@ -10,14 +10,18 @@
   "scripts": {
     "prepublishOnly": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "ci-process-cover": "cat coverage/lcov.info | coveralls",
     "test-as2": "jest"
   },
   "keywords": [
     "as2",
-    "RFC4130"
+    "RFC4130",
+    "SWC",
+    "Rust",
+    "EDI Protocol"
   ],
   "author": "Freight Trust",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "@nhs-llc/emailjs-mime-parser": "^2.1.0",
     "node-forge": "^0.9.1",
@@ -38,7 +42,6 @@
     "gulp": "^4.0.2",
     "gulp-shell": "^0.8.0",
     "jest": "^26.0.1",
-    "jsdoc-to-markdown": "^6.0.1",
     "mocha": "^7.1.2",
     "nyc": "^15.0.1",
     "source-map-support": "^0.5.19",
