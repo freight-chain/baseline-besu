@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", {value : true});
+Object.defineProperty(exports, "__esModule", { value: true });
 var bytes_1 = require("./bytes");
 function arrayifyInteger(value) {
   var result = [];
@@ -12,15 +12,16 @@ function arrayifyInteger(value) {
 function unarrayifyInteger(data, offset, length) {
   var result = 0;
   for (var i = 0; i < length; i++) {
-    result = (result * 256) + data[offset + i];
+    result = result * 256 + data[offset + i];
   }
   return result;
 }
 function _encode(object) {
   if (Array.isArray(object)) {
     var payload_1 = [];
-    object.forEach(function(
-        child) { payload_1 = payload_1.concat(_encode(child)); });
+    object.forEach(function (child) {
+      payload_1 = payload_1.concat(_encode(child));
+    });
     if (payload_1.length <= 55) {
       payload_1.unshift(0xc0 + payload_1.length);
       return payload_1;
@@ -31,16 +32,16 @@ function _encode(object) {
   }
   // see point 9 of the RLP Encoding
   // https://medium.com/coinmonks/data-structure-in-ethereum-episode-1-recursive-length-prefix-rlp-encoding-decoding-d1016832f919
-  if (typeof (object) === 'boolean') {
+  if (typeof object === "boolean") {
     if (object) {
       // @ts-ignore
-      return [ 0x01 ];
+      return [0x01];
     } else {
       // @ts-ignore
-      return [ 0x80 ];
+      return [0x80];
     }
   }
-  if (typeof (object) === "number") {
+  if (typeof object === "number") {
     object = bytes_1.hexlify(object);
   }
   var data = Array.prototype.slice.call(bytes_1.arrayify(object));
@@ -69,7 +70,7 @@ function _decodeChildren(data, offset, childOffset, length) {
       throw new Error("invalid rlp");
     }
   }
-  return {consumed : (1 + length), result : result};
+  return { consumed: 1 + length, result: result };
 }
 // Returns { consumed: number, result: (string|string[])[] }
 function _decode(data, offset) {
@@ -86,8 +87,12 @@ function _decode(data, offset) {
     if (offset + 1 + lengthLength + length_2 > data.length) {
       throw new Error("to short");
     }
-    return _decodeChildren(data, offset, offset + 1 + lengthLength,
-                           lengthLength + length_2);
+    return _decodeChildren(
+      data,
+      offset,
+      offset + 1 + lengthLength,
+      lengthLength + length_2
+    );
   } else if (data[offset] >= 0xc0) {
     var length_3 = data[offset] - 0xc0;
     if (offset + 1 + length_3 > data.length) {
@@ -103,18 +108,22 @@ function _decode(data, offset) {
     if (offset + 1 + lengthLength + length_4 > data.length) {
       throw new Error("invalid rlp data");
     }
-    var result = bytes_1.hexlify(data.slice(
-        offset + 1 + lengthLength, offset + 1 + lengthLength + length_4));
-    return {consumed : (1 + lengthLength + length_4), result : result};
+    var result = bytes_1.hexlify(
+      data.slice(
+        offset + 1 + lengthLength,
+        offset + 1 + lengthLength + length_4
+      )
+    );
+    return { consumed: 1 + lengthLength + length_4, result: result };
   } else if (data[offset] >= 0x80) {
     var length_5 = data[offset] - 0x80;
     if (offset + 1 + length_5 > data.length) {
       throw new Error("invlaid rlp data");
     }
     var result = bytes_1.hexlify(data.slice(offset + 1, offset + 1 + length_5));
-    return {consumed : (1 + length_5), result : result};
+    return { consumed: 1 + length_5, result: result };
   }
-  return {consumed : 1, result : bytes_1.hexlify(data[offset])};
+  return { consumed: 1, result: bytes_1.hexlify(data[offset]) };
 }
 // Returns (string|string[])[]
 function decode(data) {

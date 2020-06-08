@@ -1,17 +1,19 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", {value : true});
+Object.defineProperty(exports, "__esModule", { value: true });
 var bytes_1 = require("@ethersproject/bytes");
 var logger_1 = require("@ethersproject/logger");
 var _version_1 = require("./_version");
 var logger = new logger_1.Logger(_version_1.version);
 // the following two functions are not currently exported from
 // @ethersproject/bytes so need to declare here
-function isHexable(value) { return !!(value.toHexString); }
+function isHexable(value) {
+  return !!value.toHexString;
+}
 function addSlice(array) {
   if (array.slice) {
     return array;
   }
-  array.slice = function() {
+  array.slice = function () {
     var args = Array.prototype.slice.call(arguments);
     return addSlice(new Uint8Array(Array.prototype.slice.apply(array, args)));
   };
@@ -21,7 +23,7 @@ function arrayify(value, options) {
   if (!options) {
     options = {};
   }
-  if (typeof (value) === "number") {
+  if (typeof value === "number") {
     logger.checkSafeUint53(value, "invalid arrayify value");
     var result = [];
     while (value) {
@@ -33,8 +35,11 @@ function arrayify(value, options) {
     }
     return addSlice(new Uint8Array(result));
   }
-  if (options.allowMissingPrefix && typeof (value) === "string" &&
-      value.substring(0, 2) !== "0x") {
+  if (
+    options.allowMissingPrefix &&
+    typeof value === "string" &&
+    value.substring(0, 2) !== "0x"
+  ) {
     value = "0x" + value;
   }
   if (isHexable(value)) {
@@ -52,7 +57,7 @@ function arrayify(value, options) {
     return addSlice(new Uint8Array(result));
   }
   // The transaction option restriction is a string so need to handle
-  if (typeof (value) === 'string') {
+  if (typeof value === "string") {
     var result = Buffer.from(value);
     return addSlice(new Uint8Array(result));
   }
@@ -67,7 +72,7 @@ function hexlify(value, options) {
   if (!options) {
     options = {};
   }
-  if (typeof (value) === "number") {
+  if (typeof value === "number") {
     logger.checkSafeUint53(value, "invalid hexlify value");
     var hex = "";
     while (value) {
@@ -82,8 +87,11 @@ function hexlify(value, options) {
     }
     return "0x00";
   }
-  if (options.allowMissingPrefix && typeof (value) === "string" &&
-      value.substring(0, 2) !== "0x") {
+  if (
+    options.allowMissingPrefix &&
+    typeof value === "string" &&
+    value.substring(0, 2) !== "0x"
+  ) {
     value = "0x" + value;
   }
   if (isHexable(value)) {
@@ -96,7 +104,7 @@ function hexlify(value, options) {
     return value.toLowerCase();
   }
   // The transaction option restriction is a string so need to handle
-  if (typeof (value) === 'string') {
+  if (typeof value === "string") {
     // Convert to bytes so it can be converted to hex by the bytes conversion
     value = Buffer.from(value);
   }
