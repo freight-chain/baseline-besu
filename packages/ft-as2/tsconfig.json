@@ -10,8 +10,21 @@
     "outDir": "dist",
     "declaration": true,
     "allowSyntheticDefaultImports": true,
-    "typeRoots": ["node_modules/@types", "typings"],
-    "types": ["node-forge", "mailparser", "mocha", "node", "nodemailer"]
+    "typeRoots": [
+      "node_modules/@types",
+      "typings"
+    ],
+    "types": [
+      "node-forge",
+      "mailparser",
+      "mocha",
+      "node",
+      "nodemailer"
+    ]
   },
-  "exclude": ["node_modules", "dist", "test"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test"
+  ]
 }
