@@ -1,16 +1,30 @@
+<<<<<<< HEAD
 version: '3'
 
 services:
   redis:
     image: 'bitnami/redis:5.0'
+=======
+version: "3"
+
+services:
+  redis:
+    image: "bitnami/redis:5.0"
+>>>>>>> 12a2cb91bdf2cfd3a45be0f1a42def5082ab750e
     container_name: redis
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
+<<<<<<< HEAD
       - '6379:6379'
     volumes:
       - 'redis_data:/bitnami/redis/data'
+=======
+      - "6379:6379"
+    volumes:
+      - "redis_data:/bitnami/redis/data"
+>>>>>>> 12a2cb91bdf2cfd3a45be0f1a42def5082ab750e
 
 volumes:
   redis_data:

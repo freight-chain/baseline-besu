@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 version: '3'
+=======
+version: "3"
+>>>>>>> 12a2cb91bdf2cfd3a45be0f1a42def5082ab750e
 services:
   #https://github.com/joeferner/redis-commander
   redis-ui:
@@ -9,4 +13,8 @@ services:
     environment:
       - REDIS_HOSTS=local:redis:6379
     ports:
+<<<<<<< HEAD
       - "8081:8081"
+=======
+      - "8081:8081"
+>>>>>>> 12a2cb91bdf2cfd3a45be0f1a42def5082ab750e
